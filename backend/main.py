@@ -3,6 +3,7 @@ from flask_cors import CORS, cross_origin
 import pandas as pd
 import json
 from pymongo import MongoClient
+from urllib.parse import unquote
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -12,27 +13,44 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 def home():
     return "Server running"
 
-@app.route('/upload', methods=['POST'])
-def upload_file():
+@app.route('/convert', methods=['POST'])
+def convert():
+    df = pd.DataFrame()
+
     if 'file' not in request.files:
-        return 'No file uploaded', 400
-
-    file = request.files['file']
+        google_sheets_link = request.form.get('sheets-link')
+        if google_sheets_link:
+            google_sheets_link = google_sheets_link.split('/edit')[0]
+            try:
+                df = pd.read_csv(f'{google_sheets_link}/export?format=csv')
+            except Exception as e:
+                return json.dumps({'success': False, 'message': 'Failed to read Google Sheets data'}), 400
+        else:
+            return json.dumps({'success': False, 'message': 'No file or Google Sheets link provided'}), 400
+    else:
+        df = pd.read_excel(request.files['file'])
 
     mongodb_link = request.form.get('mongodb-link')
     if not mongodb_link:
-        return 'No MongoDB link provided', 400
+        return json.dumps({'success': False, 'message': 'No MongoDB link provided'}), 400
     
     collection = request.form.get('collection')
     if not collection:
-        return 'No MongoDB collection provided', 400
+        return json.dumps({'success': False, 'message': 'No MongoDB collection provided'}), 400
     
     db_name = request.form.get('db-name')
     if not db_name:
-        return 'No database provided', 400
+        return json.dumps({'success': False, 'message': 'No database name provided'}), 400
 
-    df = pd.read_excel(file)
+    objects = get_objects(df)
     
+    client = MongoClient(unquote(mongodb_link))
+    db = client[db_name]
+    db[collection].insert_many(objects)
+
+    return json.dumps({'success': True}), 200
+
+def get_objects(df):
     cols = df.columns
     df = df.reset_index()
     objects = []
@@ -41,48 +59,7 @@ def upload_file():
         for col in cols:
             obj[col] = row[col]
         objects.append(obj)
-    
-    client = MongoClient(mongodb_link)
-    db = client[db_name]
-    db[collection].insert_many(objects)
-
-    return json.dumps({'success': True}), 200
-
-@app.route('/convertSheets', methods=['POST'])
-def convertSheets():
-    google_sheets_link = request.form.get('sheets-link')
-    if not google_sheets_link:
-        return 'No Google Sheets link provided', 400
-
-    mongodb_link = request.form.get('mongodb-link')
-    if not mongodb_link:
-        return 'No MongoDB link provided', 400
-    
-    collection = request.form.get('collection')
-    if not collection:
-        return 'No MongoDB collection provided', 400
-    
-    db_name = request.form.get('db-name')
-    if not db_name:
-        return 'No database provided', 400
-
-    google_sheets_link = google_sheets_link[:google_sheets_link.find('/edit')]
-    df = pd.read_csv(f'{google_sheets_link}/export?format=csv')
-
-    cols = df.columns
-    df = df.reset_index()
-    objects = []
-    for index, row in df.iterrows():
-        obj = {}
-        for col in cols:
-            obj[col] = row[col]
-        objects.append(obj)
-    
-    client = MongoClient(mongodb_link)
-    db = client[db_name]
-    db[collection].insert_many(objects)
-
-    return json.dumps({'success': True}), 200
+    return objects
 
 if __name__ == '__main__':
     app.run(debug=True)

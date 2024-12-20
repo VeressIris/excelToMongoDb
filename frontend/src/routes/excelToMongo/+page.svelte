@@ -17,7 +17,7 @@
 		formData.append('db-name', db);
 
 		try {
-			const response = await fetch('https://exceltomongodb.onrender.com/upload', {
+			const response = await fetch('https://exceltomongodb.onrender.com/convert', {
 				method: 'POST',
 				body: formData
 			});
