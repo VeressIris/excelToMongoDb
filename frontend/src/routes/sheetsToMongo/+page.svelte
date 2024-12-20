@@ -3,6 +3,7 @@
 	let mongodbLink = '';
 	let collection = '';
 	let db = '';
+	let success = null;
 
 	async function processForm() {
 		if (mongodbLink == '' || collection == '' || db == '' || sheetsLink == '') {
@@ -24,12 +25,15 @@
 			if (response.ok) {
 				const result = await response.json();
 				console.log(result);
+				success = true;
 			} else {
 				const error = await response.text();
 				console.error(error);
+				success = false;
 			}
 		} catch (error) {
 			console.error(error);
+			success = false;
 		}
 	}
 </script>
@@ -96,4 +100,9 @@
 			>Upload</button
 		>
 	</form>
+	{#if success == true}
+		<h4 class="mt-4 text-green-700">Successfully uploaded to MongoDB</h4>
+	{:else if success == false}
+		<h4 class="mt-4 text-red-700">Failed to upload to MongoDB</h4>
+	{/if}
 </div>

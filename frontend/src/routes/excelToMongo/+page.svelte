@@ -4,6 +4,7 @@
 	let collection = '';
 	let db = '';
 	let fileMessage = '';
+	let success = null;
 
 	async function processForm() {
 		if (!file || mongodbLink == '' || collection == '' || db == '') {
@@ -24,12 +25,15 @@
 
 			if (response.ok) {
 				const result = await response.json();
+				success = true;
 				console.log(result);
 			} else {
 				const error = await response.text();
+				success = false;
 				console.error(error);
 			}
 		} catch (error) {
+			success = false;
 			console.error(error);
 		}
 	}
@@ -135,4 +139,9 @@
 			>
 		</div>
 	</form>
+	{#if success == true}
+		<h4 class="mt-4 text-green-700">Successfully uploaded to MongoDB</h4>
+	{:else if success == false}
+		<h4 class="mt-4 text-red-700">Failed to upload to MongoDB</h4>
+	{/if}
 </div>
