@@ -39,11 +39,13 @@
 </svelte:head>
 
 <div class="flex flex-col items-center justify-center">
-	<h1 class="mb-6">Google Sheets to <span class="text-green-700">MongoDB</span> converter</h1>
+	<h1 class="mb-6 text-center lg:text-start">
+		Google Sheets to <span class="text-green-700">MongoDB</span> converter
+	</h1>
 	<form
 		method="POST"
 		enctype="multipart/form-data"
-		class="flex flex-col items-center justify-center rounded-2xl bg-white text-center text-lg"
+		class="flex w-full max-w-[400px] flex-col items-center justify-center rounded-2xl text-center text-lg"
 	>
 		<div class="flex w-full flex-col items-start">
 			<label for="sheets-link" class="font-bold">Google Sheets link:</label>

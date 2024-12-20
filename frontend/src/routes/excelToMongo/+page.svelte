@@ -60,7 +60,9 @@
 </svelte:head>
 
 <div class="flex flex-col items-center justify-center">
-	<h1 class="mb-6">Excel to <span class="text-green-700">MongoDB</span> converter</h1>
+	<h1 class="mb-6 text-center md:text-start">
+		Excel to <span class="text-green-700">MongoDB</span> converter
+	</h1>
 	<form
 		method="POST"
 		enctype="multipart/form-data"
