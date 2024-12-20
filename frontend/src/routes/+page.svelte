@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>Table to MongoDB converter</title>
+</svelte:head>
+
 <div class="flex flex-col items-center justify-center">
 	<h1 class="mb-6">Table to <span class="text-green-700">MongoDB</span> converters</h1>
 	<h3 class="mb-4 font-semibold">From where do you want to convert?</h3>

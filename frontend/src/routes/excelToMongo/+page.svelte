@@ -55,6 +55,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Excel to MongoDB converter</title>
+</svelte:head>
+
 <div class="flex flex-col items-center justify-center">
 	<h1 class="mb-6">Excel to <span class="text-green-700">MongoDB</span> converter</h1>
 	<form
@@ -123,7 +127,7 @@
 			</div>
 			<button
 				type="submit"
-				on:click={processForm}
+				on:click|preventDefault={processForm}
 				class="my-2 block w-fit rounded-md bg-green-700 px-3 py-2 text-xl font-semibold text-white outline-green-100 transition-all hover:bg-green-800 hover:outline hover:outline-4 active:bg-green-900"
 				>Upload</button
 			>

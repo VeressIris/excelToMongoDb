@@ -1,24 +1,22 @@
 <script>
-	let file;
 	let sheetsLink = '';
 	let mongodbLink = '';
 	let collection = '';
 	let db = '';
-	let fileMessage = '';
 
 	async function processForm() {
-		if (!file || mongodbLink == '' || collection == '' || db == '' || sheetsLink == '') {
+		if (mongodbLink == '' || collection == '' || db == '' || sheetsLink == '') {
 			return;
 		}
 
 		const formData = new FormData();
-		formData.append('file', file);
+		formData.append('sheets-link', sheetsLink);
 		formData.append('mongodb-link', mongodbLink);
 		formData.append('collection', collection);
 		formData.append('db-name', db);
 
 		try {
-			const response = await fetch('http://127.0.0.1:5000/upload', {
+			const response = await fetch('http://127.0.0.1:5000/convertSheets', {
 				method: 'POST',
 				body: formData
 			});
@@ -35,6 +33,10 @@
 		}
 	}
 </script>
+
+<svelte:head>
+	<title>Google Sheets to MongoDB converter</title>
+</svelte:head>
 
 <div class="flex flex-col items-center justify-center">
 	<h1 class="mb-6">Google Sheets to <span class="text-green-700">MongoDB</span> converter</h1>
@@ -87,7 +89,7 @@
 		</div>
 		<button
 			type="submit"
-			on:click={processForm}
+			on:click|preventDefault={processForm}
 			class="my-2 block w-fit rounded-md bg-green-700 px-3 py-2 text-xl font-semibold text-white outline-green-100 transition-all hover:bg-green-800 hover:outline hover:outline-4 active:bg-green-900"
 			>Upload</button
 		>
