@@ -6,7 +6,7 @@ from pymongo import MongoClient
 from urllib.parse import unquote
 
 app = Flask(__name__)
-cors = CORS(app)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route("/")
